@@ -4,27 +4,40 @@ import { app } from '../firebase'
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 
-export default function Login()
-{
+
+export default function Login( props ) {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
+    const [erro, setErro] = useState(null);
 
-    async function logar()
-    {
-        const auth = getAuth(app)
-        const resposta = await signInWithEmailAndPassword(auth, email, senha);
-        
+    async function logar() {
+
+        console.log(email, senha)
+        try {
+            const auth = getAuth(app)
+            const resposta = await signInWithEmailAndPassword(auth, email, senha);
+            console.log(resposta);
+            props.logado(true);
+        } catch (e)
+        {
+            setErro(true);
+        }
     }
 
     return (
         <View>
+
+            { (erro)?  <Text>Usuário ou senha inválidos</Text> : null }
+
             <Text>E-mail</Text>
-            <TextInput onChange={(evento) => setEmail(evento.target.value)} />
+            <TextInput onChangeText={(evento) => setEmail(evento)} />
 
             <Text>Senha</Text>
-            <TextInput onChange={(evento) => setSenha(evento.target.value)} />
+            <TextInput
+                secureTextEntry={true}
+                onChangeText={(evento) => setSenha(evento)} />
 
-            <Button title="Entrar" onPress={logar}/>
+            <Button title="Entrar" onPress={logar} />
         </View>
     )
 }
